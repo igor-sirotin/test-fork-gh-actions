@@ -7,8 +7,6 @@ on:
       - opened
       - reopened
       - synchronize
-      - labeled
-      - unlabeled
 jobs:
   main:
     name: Validate format
