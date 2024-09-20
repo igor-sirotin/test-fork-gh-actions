@@ -20,7 +20,7 @@ export CLR='\033[2K'
 
 parse_commits() {
 
-    BASE_BRANCH=${BASE_BRANCH:-develop}
+    BASE_BRANCH=${BASE_BRANCH:-main}
 
     start_commit=${1:-origin/${BASE_BRANCH}}
     end_commit=${2:-HEAD}
