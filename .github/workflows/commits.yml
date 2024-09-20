@@ -35,7 +35,7 @@ jobs:
         run: |
           set +e
 
-          output=$(./check_commit.sh ${{ github.event.pull_request.base.ref }} ${{ github.event.pull_request.head.ref }} 2>&1)
+          output=$(./check_commit.sh ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }} 2>&1)
           exit_code=$?
           
           has_breaking_changes=$(echo "${output}" | tail -n 1)
