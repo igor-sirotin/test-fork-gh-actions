@@ -1,0 +1,58 @@
+name: "Conventional Commits"
+
+on:
+  # pull_request_target:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - labeled
+      - unlabeled
+jobs:
+  main:
+    name: Validate format
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.GITHUB_HEAD_REF }}
+          fetch-tags: true
+
+      - name: Fetch tags
+        run: |
+          git fetch --tags --quiet
+          echo ${{ github.event.pull_request.head.ref }}
+          echo ${{ github.event.pull_request.base.ref }}
+          echo ${{ env.GITHUB_HEAD_REF }}
+          echo origin/${GITHUB_HEAD_REF}
+          git checkout ${{ github.event.pull_request.head.ref }}
+
+      - name: "Comment"
+        uses: marocchino/sticky-pull-request-comment@v2
+        # When the previous steps fails, the workflow would stop. By adding this
+        # condition you can continue the execution with the populated error message.
+        if: always()
+        with:
+          header: commit-message-lint-error
+          message: |
+            Hello, world!
+            job id: ${{ github.job }}
+            echo "README: $(cat README.md)"
+
+      - name: "Label"
+        if: always()
+        run: |
+          if [[ $ADD_LABEL == 'true' ]]; then
+            command="--add-label"
+          else
+            command="--remove-label"
+          fi
+          gh issue edit "$NUMBER" $command "breaking change"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          NUMBER: ${{ github.event.pull_request.number }}
+          ADD_LABEL: ${{ steps.check_commit_message.outputs.has_breaking_changes == 'true' }}
