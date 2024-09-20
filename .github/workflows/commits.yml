@@ -24,10 +24,10 @@ jobs:
       - name: Fetch tags
         run: |
           git fetch --tags --quiet
-          echo ${{ github.event.pull_request.head.ref }}
-          echo ${{ github.event.pull_request.base.ref }}
-          echo ${{ env.GITHUB_HEAD_REF }}
-          echo origin/${GITHUB_HEAD_REF}
+          echo "1 - ${{ github.event.pull_request.head.ref }}"
+          echo "2 - ${{ github.event.pull_request.base.ref }}"
+          echo "3 - ${{ env.GITHUB_HEAD_REF }}"
+          echo "4 - origin/${GITHUB_HEAD_REF}"
           git checkout ${{ github.event.pull_request.head.ref }}
 
       - name: "Comment"
@@ -45,14 +45,10 @@ jobs:
       - name: "Label"
         if: always()
         run: |
-          if [[ $ADD_LABEL == 'true' ]]; then
-            command="--add-label"
-          else
-            command="--remove-label"
-          fi
-          gh issue edit "$NUMBER" $command "breaking change"
+          echo "GH_REPO=${GH_REPO}"
+          echo "NUMBER=${NUMBER}"
+          gh issue edit "$NUMBER" --add-label "breaking change"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_REPO: ${{ github.repository }}
           NUMBER: ${{ github.event.pull_request.number }}
-          ADD_LABEL: ${{ steps.check_commit_message.outputs.has_breaking_changes == 'true' }}
