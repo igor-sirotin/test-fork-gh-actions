@@ -35,7 +35,7 @@ jobs:
         run: |
           set +e
 
-          output=$(./commit_check.sh 2>&1)
+          output=$(./check_commit.sh 2>&1)
           exit_code=$?
           
           has_breaking_changes=$(echo "${output}" | tail -n 1)
